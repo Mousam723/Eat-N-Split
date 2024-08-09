@@ -10,13 +10,13 @@ const initialFriends = [
     id: 118836,
     name: "Clark",
     image: "https://i.pravatar.cc/48?u=118836",
-    balance: -7,
+    balance: 0,
   },
   {
     id: 933372,
     name: "Sarah",
     image: "https://i.pravatar.cc/48?u=933372",
-    balance: 20,
+    balance: 0,
   },
   {
     id: 499476,
@@ -35,6 +35,12 @@ export default function App() {
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [showSplitBillForm, setShowSplitBillForm] = useState(false);
+  const [showRemoveFriendForm, setShowRemoveFriendForm] = useState(false);
+
+  const currentUser = {
+    id: "self", // Unique identifier for yourself
+    name: "You", // Your name
+  };
 
   useEffect(() => {
     localStorage.setItem("friends", JSON.stringify(friends));
@@ -57,25 +63,62 @@ export default function App() {
     );
   }
 
-  function handleSplitBill(value) {
-    const totalFriends = selectedFriends.length;
-    if (totalFriends === 0) return;
+  function handleSplitBill({ shares, totalBill, whoPaid }) {
+    const totalShares = Object.values(shares).reduce((sum, share) => sum + Number(share), 0);
+    const totalAmount = Number(totalBill);
 
-    const amountPerFriend = value / totalFriends;
-    setFriends((friends) =>
-      friends.map((friend) =>
-        selectedFriends.some((f) => f.id === friend.id)
-          ? { ...friend, balance: friend.balance + amountPerFriend }
-          : friend
-      )
-    );
+    if (totalShares === 0 || totalAmount === 0) return;
+
+    const updatedFriends = friends.map((friend) => {
+        const share = shares[friend.id] || 0;
+        const amountOwed = Number(share);
+        if (friend.id === whoPaid) {
+            // If the current user is paying the bill
+            return { ...friend, balance: (friend.balance || 0) + (totalAmount - amountOwed) };
+        } else if (selectedFriends.some((f) => f.id === friend.id)) {
+            // If the friend is in the selected list
+            return { ...friend, balance: (friend.balance || 0) + amountOwed };
+        } else {
+            return friend;
+        }
+    });
+
+    
+
+    setFriends(updatedFriends);
     setSelectedFriends([]);
     setShowSplitBillForm(false);
+  }
+
+
+  function resetForm() {
+    setSelectedFriends([]);
+    setShowSplitBillForm(false);
+  }
+
+  function resetBalances() {
+    setFriends((friends) =>
+      friends.map((friend) => ({
+        ...friend,
+        balance: 0,
+      }))
+    );
   }
   
   function toggleSplitBillForm() {
     setShowSplitBillForm((prev) => !prev);
   }
+
+  function handleShowRemoveFriend() {
+    setShowRemoveFriendForm((show) => !show);
+  }
+
+  function handleRemoveFriend(friend) {
+    setFriends((friends) => friends.filter((f) => f.id !== friend.id));
+    setShowRemoveFriendForm(false);
+  }
+
+  // const filteredFriends = friends.filter(friend => friend.id !== currentUserId || !showSplitBillForm || friends.some(f => f.id === currentUserId && f.balance !== 0));
 
   return (
     <div className="app">
@@ -89,9 +132,21 @@ export default function App() {
             friends={friends}
             selectedFriends={selectedFriends}
             onSelection={handleSelection}
+            currentUserId={currentUser.id}
           />
 
           {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend} />}
+          {showRemoveFriendForm && (
+            <div className="remove-friend-form">
+              <h2>Select a friend to remove:</h2>
+              {friends.map((friend) => (
+                <Button key={friend.id} onClick={() => handleRemoveFriend(friend)}>
+                  Remove {friend.name}
+                </Button>
+              ))}
+              <Button onClick={handleShowRemoveFriend}>Cancel</Button>
+            </div>
+          )}
 
           <Button onClick={handleShowAddFriend}>
             {showAddFriend ? "Close" : "Add friend"}
@@ -99,12 +154,20 @@ export default function App() {
           <Button onClick={toggleSplitBillForm}>
            {showSplitBillForm ? "Close Split Bill" : "Split Bill"}
           </Button>
+          <Button onClick={resetBalances} className="reset-balances-button">
+            Reset All Balances
+          </Button>
+          <Button onClick={handleShowRemoveFriend}>
+            {showRemoveFriendForm ? "Close Remove Friend" : "Remove Friend"}
+          </Button>
         </div>
 
         {showSplitBillForm && (
           <FormSplitBill
             selectedFriends={selectedFriends}
             onSplitBill={handleSplitBill}
+            resetForm={resetForm}
+            currentUser={currentUser}
           />
         )}
       </div>

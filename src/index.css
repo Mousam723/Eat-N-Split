@@ -139,3 +139,17 @@ h2 {
   font-size: 18px;
   margin-bottom: 18px;
 }
+.remove-friend-form {
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #f9f9f9;
+}
+
+.remove-friend-form h2 {
+  margin-top: 0;
+}
+
+.remove-friend-form button {
+  display: block;
+  margin: 5px 0;
+}
