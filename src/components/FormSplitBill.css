@@ -2,7 +2,7 @@
 .form-split-bill {
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 0 5px;
   padding: 20px;
   background: #fff;
   border-radius: 10px;

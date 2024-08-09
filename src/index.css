@@ -153,3 +153,13 @@ h2 {
   display: block;
   margin: 5px 0;
 }
+.button-container {
+  display: flex;
+  justify-content: space-evenly; /* Distributes space evenly between buttons */
+  align-items: center; /* Aligns items vertically center */
+  margin: 20px 0; /* Optional: Adjust margin as needed */
+}
+
+.button-container button {
+  margin: 0 10px; /* Optional: Adjust spacing between buttons */
+}

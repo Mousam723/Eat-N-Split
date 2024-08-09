@@ -148,18 +148,20 @@ export default function App() {
             </div>
           )}
 
-          <Button onClick={handleShowAddFriend}>
-            {showAddFriend ? "Close" : "Add friend"}
-          </Button>
-          <Button onClick={toggleSplitBillForm}>
-           {showSplitBillForm ? "Close Split Bill" : "Split Bill"}
-          </Button>
-          <Button onClick={resetBalances} className="reset-balances-button">
-            Reset All Balances
-          </Button>
-          <Button onClick={handleShowRemoveFriend}>
-            {showRemoveFriendForm ? "Close Remove Friend" : "Remove Friend"}
-          </Button>
+          <div className="button-container">
+            <Button onClick={handleShowAddFriend}>
+              {showAddFriend ? "Close" : "Add friend"}
+            </Button>
+            <Button onClick={toggleSplitBillForm}>
+              {showSplitBillForm ? "Close Split Bill" : "Split Bill"}
+            </Button>
+            <Button onClick={resetBalances} className="reset-balances-button">
+              Reset All Balances
+            </Button>
+            <Button onClick={handleShowRemoveFriend}>
+              {showRemoveFriendForm ? "Close Remove Friend" : "Remove Friend"}
+            </Button>
+          </div>
         </div>
 
         {showSplitBillForm && (
